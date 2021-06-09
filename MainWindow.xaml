@@ -29,9 +29,12 @@
         <ComboBox Grid.Column="1" SelectedItem="{Binding CurrentUnit}" ItemsSource="{Binding MeasurementUnits}"></ComboBox>
 
         <Button Grid.Column="0" Grid.Row="1" Click="OnAddM46">M4, 6mm</Button>
+        <Button Grid.Column="1" Grid.Row="1" Click="OnAddM48">M4, 8mm</Button>
+        <Button Grid.Column="0" Grid.Row="2" Click="OnAddM56">M5, 6mm</Button>
+        <Button Grid.Column="1" Grid.Row="2" Click="OnAddM58">M5, 8mm</Button>
 
         <ListView Grid.Row="1" Grid.Column="3" ItemsSource="{Binding CartScrews}" 
-                 DisplayMemberPath="Type, TotalPrice" Grid.RowSpan="3"/>
+                  DisplayMemberPath="DisplayString" Grid.RowSpan="3"/>
 
     </Grid>
 </Window>

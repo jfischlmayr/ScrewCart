@@ -12,7 +12,7 @@ namespace ScrewCart
         public double Price { get; set; }
         public double Kg { get; set; }
         public int Amount { get; set; }
-        public string DisplayString { get; set; }
+        public string DisplayString { get => $"{Amount}x {Type} Weight: {Kg}kg Cost: {Price}"; }
 
         public CartScrew()
         {

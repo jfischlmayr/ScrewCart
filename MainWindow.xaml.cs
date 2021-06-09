@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,8 +21,15 @@ namespace ScrewCart
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        public IEnumerable<string> ScrewTypes { get; } = new[]
+        {
+            "M4, 6mm",
+            "M4, 8mm",
+            "M5, 6mm",
+            "M5, 8mm",
+        };
         public List<Screw> Screws { get; set; } = new()
         {
             new(
@@ -44,30 +54,35 @@ namespace ScrewCart
             )
         };
 
-        public List<CartScrew> CartScrews { get; set; } = new();
+        public ObservableCollection<CartScrew> CartScrews { get; } = new();
 
         public string[] MeasurementUnits { get; set; } = new string[2] { "kg", "Package" };
         public string CurrentUnit { get; set; }
+        public string CurrentScrewType { get; set; }
         public string Amount { get; set; } = "";
+        public double TotalPrice { get; private set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
 
         public MainWindow()
         {
             CurrentUnit = MeasurementUnits[1];
+            CurrentScrewType = ScrewTypes.First();
             DataContext = this;
+
             InitializeComponent();
 
         }
 
-        private void OnAddM46(object sender, RoutedEventArgs e)
+        private void OnAdd(object sender, RoutedEventArgs e)
         {
-            string type = "M4, 6mm";
             var dialog = new AddScrewWindow();
             dialog.DataContext = this;
             dialog.ShowDialog();
             double amountDouble = Convert.ToInt32(Amount);
-            var screwType = Screws.Find(s => s.Type == type);
-            var screw = new CartScrew(type);
+            var screwType = Screws.Find(s => s.Type == CurrentScrewType);
+            var screw = new CartScrew(CurrentScrewType);
             if (CurrentUnit == MeasurementUnits[0])
             {
                 screw.Kg = amountDouble;
@@ -77,81 +92,13 @@ namespace ScrewCart
             else
             {
                 screw.Amount = (int)amountDouble;
+                screw.Kg = Math.Round(screw.Amount * screwType.KgPer100, 2);
             }
-            screw.Price = screw.Amount * screwType.PricePer100;
+            screw.Price = Math.Round(screw.Amount * screwType.PricePer100, 2);
             CartScrews.Add(screw);
             Amount = "";
-        }
-
-        private void OnAddM48(object sender, RoutedEventArgs e)
-        {
-            string type = "M4, 8mm";
-            var dialog = new AddScrewWindow();
-            dialog.DataContext = this;
-            dialog.ShowDialog();
-            double amountDouble = Convert.ToInt32(Amount);
-            var screwType = Screws.Find(s => s.Type == type);
-            var screw = new CartScrew(type);
-            if (CurrentUnit == MeasurementUnits[0])
-            {
-                screw.Kg = amountDouble;
-                var x = amountDouble / screwType.KgPer100;
-                screw.Amount = x % 1 >= 0.5 ? (int)x + 1 : (int)x;
-            }
-            else
-            {
-                screw.Amount = (int)amountDouble;
-            }
-            screw.Price = screw.Amount * screwType.PricePer100;
-            CartScrews.Add(screw);
-            Amount = "";
-        }
-
-        private void OnAddM56(object sender, RoutedEventArgs e)
-        {
-            string type = "M5, 6mm";
-            var dialog = new AddScrewWindow();
-            dialog.DataContext = this;
-            dialog.ShowDialog();
-            double amountDouble = Convert.ToInt32(Amount);
-            var screwType = Screws.Find(s => s.Type == type);
-            var screw = new CartScrew(type);
-            if (CurrentUnit == MeasurementUnits[0])
-            {
-                screw.Kg = amountDouble;
-                var x = amountDouble / screwType.KgPer100;
-                screw.Amount = x % 1 >= 0.5 ? (int)x + 1 : (int)x;
-            }
-            else
-            {
-                screw.Amount = (int)amountDouble;
-            }
-            screw.Price = screw.Amount * screwType.PricePer100;
-            CartScrews.Add(screw);
-        }
-
-        private void OnAddM58(object sender, RoutedEventArgs e)
-        {
-            string type = "M5, 8mm";
-            var dialog = new AddScrewWindow();
-            dialog.DataContext = this;
-            dialog.ShowDialog();
-            double amountDouble = Convert.ToInt32(Amount);
-            var screwType = Screws.Find(s => s.Type == type);
-            var screw = new CartScrew(type);
-            if (CurrentUnit == MeasurementUnits[0])
-            {
-                screw.Kg = amountDouble;
-                var x = amountDouble / screwType.KgPer100;
-                screw.Amount = x % 1 >= 0.5 ? (int)x + 1 : (int)x;
-            }
-            else
-            {
-                screw.Amount = (int)amountDouble;
-            }
-            screw.Price = screw.Amount * screwType.PricePer100;
-            CartScrews.Add(screw);
-            Amount = "";
+            TotalPrice += Math.Round(screw.Price, 2);
+            PropertyChanged?.Invoke(this, new(nameof(TotalPrice)));
         }
     }
 }

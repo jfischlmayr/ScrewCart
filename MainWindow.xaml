@@ -8,33 +8,51 @@
         d:DataContext="{d:DesignInstance Type=local:MainWindow, IsDesignTimeCreatable=True}"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
-        
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="10"/>
+        </Style>
+        <Style TargetType="ListBox">
+            <Setter Property="Margin" Value="15,15,5,15" />
+            <Setter Property="MinWidth" Value="100" />
+        </Style>
     </Window.Resources>
-    <Grid ShowGridLines="True">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="0.25*"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="5*"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Column="0">Unit of Measurement:</TextBlock>
-        <ComboBox Grid.Column="1" SelectedItem="{Binding CurrentUnit}" ItemsSource="{Binding MeasurementUnits}"></ComboBox>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition MinHeight="20" MaxHeight="50"/>
+                <RowDefinition MinHeight="20" MaxHeight="50"/>
+                <RowDefinition MinHeight="20" MaxHeight="50"/>
+            </Grid.RowDefinitions>
 
-        <Button Grid.Column="0" Grid.Row="1" Click="OnAddM46">M4, 6mm</Button>
-        <Button Grid.Column="1" Grid.Row="1" Click="OnAddM48">M4, 8mm</Button>
-        <Button Grid.Column="0" Grid.Row="2" Click="OnAddM56">M5, 6mm</Button>
-        <Button Grid.Column="1" Grid.Row="2" Click="OnAddM58">M5, 8mm</Button>
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="10">Screw Type:</TextBlock>
+            <ComboBox Grid.Row="0" Grid.Column="1" Margin="10" Height="20" SelectedItem= "{Binding CurrentScrewType}" ItemsSource="{Binding ScrewTypes}"></ComboBox>
 
-        <ListView Grid.Row="1" Grid.Column="3" ItemsSource="{Binding CartScrews}" 
-                  DisplayMemberPath="DisplayString" Grid.RowSpan="3"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="10">Unit of Measurement:</TextBlock>
+            <ComboBox Grid.Row="1" Grid.Column="1" Margin="10" Height="20" SelectedItem= "{Binding CurrentUnit}" ItemsSource="{Binding MeasurementUnits}"></ComboBox>
+
+            <Button Grid.Column="1" Grid.Row="2" Height="20" Width="50" Click="OnAdd">Add</Button>
+        </Grid>
+        
+        <DataGrid Grid.Column="2" Margin="5" IsReadOnly="True" ItemsSource="{Binding Path=CartScrews}"/>
+
+        <StackPanel Margin="10" Grid.Row="1" Grid.Column="2">
+            <TextBlock Text="Total Price:"/>
+            <TextBlock Text="{Binding Path=TotalPrice}"/>
+        </StackPanel>
 
     </Grid>
 </Window>
